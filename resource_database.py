@@ -54,16 +54,15 @@ def read_collection(parent_collections, collection_name, named = False):
     else:
         records = []
 
-    with os.scandir(path) as iterator:
-        for entry in iterator:
-            if entry.name.endswith("_record"):
-                record_file = open(entry, "r")
-                record = json.load(record_file)
-                if named:
-                    record_name = entry.name[0:-len("_record")]
-                    records[record_name] = record
-                else:
-                    records.append(record)
+    for entry in os.scandir(path):
+        if entry.name.endswith("_record"):
+            record_file = open(entry.path, "r")
+            record = json.load(record_file)
+            if named:
+                record_name = entry.name[0:-len("_record")]
+                records[record_name] = record
+            else:
+                records.append(record)
 
     return records
 
@@ -75,10 +74,9 @@ def read_collection(parent_collections, collection_name, named = False):
 def list_questionnaires():
     questionnaires = []
 
-    with os.scandir(config.data_directory) as iterator:
-        for entry in iterator:
-            if entry.name.endswith("_collection"):
-                questionnaires.append(entry.name[:-len("_collection")])
+    for entry in os.scandir(config.data_directory):
+        if entry.name.endswith("_collection"):
+            questionnaires.append(entry.name[:-len("_collection")])
 
     return questionnaires
 
