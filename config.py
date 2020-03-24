@@ -13,6 +13,7 @@ keycloak_realm_api_url = "https://keycloak.example.com/auth/admin/realms/master"
 client_id = "fish-backend"
 client_secret = ""
 frontend_client_uuid = ""
+frontend_client_id = "fish-frontend"
 
 headers = {
 	"Access-Control-Allow-Origin": "*",

@@ -21,12 +21,12 @@ def get_authorized_roles():
             return []
         if "resource_access" not in token_info:
             return []
-        if "registration-data" not in token_info["resource_access"]:
+        if config.frontend_client_id not in token_info["resource_access"]:
             return []
-        if "roles" not in token_info["resource_access"]["registration-data"]:
+        if "roles" not in token_info["resource_access"][config.frontend_client_id]:
             return []
 
-        return token_info["resource_access"]["registration-data"]["roles"]
+        return token_info["resource_access"][config.frontend_client_id]["roles"]
     else:
         return []
 
