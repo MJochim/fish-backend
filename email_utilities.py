@@ -4,12 +4,12 @@ from email.message import EmailMessage
 import config
 
 
-def send_email(from, to, cc, subject, text):
+def send_email(sender, to, cc, subject, text):
     message = EmailMessage()
     message.set_content(text)
 
     message['Subject'] = subject
-    message['From'] = from
+    message['From'] = sender
     message['To'] = to
     message['Cc'] = cc
 

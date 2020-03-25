@@ -1,4 +1,5 @@
 import cgi
+import datetime
 import json
 import os
 import sys
@@ -6,6 +7,7 @@ import sys
 import config
 import resource_database
 from cgi_utilities import end_with_success, end_with_status
+from email_utilities import send_email
 from roles import get_authorized_roles, get_all_roles, create_role
 
 
@@ -204,4 +206,32 @@ def get_password ():
 
 
 def post_questionnaire_response (questionnaire_key):
-    pass
+    input_data = json.load(sys.stdin)
+
+    input_data["time"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # TODO Add IP and browser? Only possible if we notify the users
+
+    resource_database.write_questionnaire_response(questionnaire_key, input_data)
+
+    # Send confirmation email
+    if config.smtp_host:
+        if "ContactLanguage" in input_data:
+            contact_language = input_data["ContactLanguage"][-2:]
+            conference_to_extract_email_from = input_data["conferenceKey"][0:-2] + contact_language
+        else:
+            conference_to_extract_email_from = input_data["conferenceKey"]
+
+        # The language feature was based on a brain fart. We therefore hardcode "" as language here.
+        email_info = resource_database.read_questionnaire_email(conference_to_extract_email_from, "")
+
+        recipient_address = input_data["Email"]
+
+        send_email(
+            email_info["senderAddress"],
+            recipient_address,
+            email_info["ccAddress"],
+            email_info["subject"],
+            email_info["text"]
+        )
+
+    end_with_success(input_data)

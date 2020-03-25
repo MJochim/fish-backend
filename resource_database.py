@@ -1,3 +1,4 @@
+import hashlib
 import json
 import os
 
@@ -100,3 +101,7 @@ def delete_questionnaire_email(questionnaire_key, language):
     
 def read_questionnaire_responses(questionnaire_key):
     return read_collection([questionnaire_key], "responses")
+
+def write_questionnaire_response(questionnaire_key, response):
+    record_name = hashlib.sha256(json.dumps(response).encode("utf-8")).hexdigest()
+    write_record([questionnaire_key, "responses"], record_name, response)

@@ -55,7 +55,7 @@ elif len(path_components) == 3 and path_components[2] == "responses":
     if request_method == "GET":
         endpoints.get_questionnaire_responses(questionnaire_key)
     elif request_method == "POST":
-        end_with_status(501)
+        endpoints.post_questionnaire_response(questionnaire_key)
     else:
         end_with_status(405)
 
