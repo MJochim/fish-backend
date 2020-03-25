@@ -89,6 +89,15 @@ def put_questionnaire(questionnaire_name):
     else:
         end_with_status(403)
 
+def get_questionnaire (questionnaire_name):
+    authorized_roles = get_authorized_roles(False)
+
+    if "all" in authorized_roles or questionnaire_name in authorized_roles or True: # TODO instead of True, check if questionnaire is public
+        questionnaire = resource_database.read_questionnaire(questionnaire_name)
+        end_with_success(questionnaire)
+    else:
+        end_with_status(403)
+
 def get_questionnaire_labels (questionnaire_name):
     authorized_roles = get_authorized_roles()
     if len(authorized_roles) == 0:

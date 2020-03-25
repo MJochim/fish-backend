@@ -43,8 +43,7 @@ elif len(path_components) == 2:
     questionnaire_name = path_components[1]
 
     if request_method == "GET":
-        # return the questionnaire (and not its responses)
-        end_with_status(501)
+        endpoints.get_questionnaire(questionnaire_name)
     elif request_method == "PUT":
         endpoints.put_questionnaire(questionnaire_name)
     else:
