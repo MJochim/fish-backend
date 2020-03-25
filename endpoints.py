@@ -18,7 +18,7 @@ def get_all_questionnaires():
 
     for current_questionnaire in all_questionnaires:
         response.append({
-            "name": current_questionnaire,
+            "key": current_questionnaire,
             "public": True,
             "admin": (current_questionnaire in authorized_roles) or ("all" in authorized_roles)
         })
@@ -26,13 +26,13 @@ def get_all_questionnaires():
     end_with_success(response)
 
 
-def get_questionnaire_responses(questionnaire_name):
+def get_questionnaire_responses(questionnaire_key):
     authorized_roles = get_authorized_roles()
     if len(authorized_roles) == 0:
         end_with_status(403)
 
-    if "all" in authorized_roles or questionnaire_name in authorized_roles:
-        resource = resource_database.read_questionnaire_responses(questionnaire_name)
+    if "all" in authorized_roles or questionnaire_key in authorized_roles:
+        resource = resource_database.read_questionnaire_responses(questionnaire_key)
         end_with_success(resource)
     else:
         end_with_status(403)
@@ -44,19 +44,19 @@ def create_questionnaire():
         end_with_status(403)
     
     form = cgi.FieldStorage()
-    questionnaire_name = form.getfirst("questionnaireName")
+    questionnaire_key = form.getfirst("questionnaireKey")
 
-    # TODO sanitize name
+    # TODO sanitize key
 
-    if not questionnaire_name:
+    if not questionnaire_key:
         end_with_status(400)
 
     all_questionnaires = resource_database.list_questionnaires()
-    if questionnaire_name in all_questionnaires or questionnaire_name == "all":
+    if questionnaire_key in all_questionnaires or questionnaire_key == "all":
         end_with_status(409)
 
     new_questionnaire = {
-        "key": questionnaire_name,
+        "key": questionnaire_key,
         "place": "",
         "avatar": "",
         "date": "",
@@ -66,16 +66,16 @@ def create_questionnaire():
         "registration": []
     }
 
-    resource_database.write_questionnaire(questionnaire_name, new_questionnaire)
-    resource_database.create_collection([], questionnaire_name)
-    resource_database.create_collection([questionnaire_name], "emails")
-    resource_database.create_collection([questionnaire_name], "responses")
+    resource_database.write_questionnaire(questionnaire_key, new_questionnaire)
+    resource_database.create_collection([], questionnaire_key)
+    resource_database.create_collection([questionnaire_key], "emails")
+    resource_database.create_collection([questionnaire_key], "responses")
 
-    create_role(questionnaire_name)
+    create_role(questionnaire_key)
 
     end_with_success(None)
 
-def put_questionnaire(questionnaire_name):
+def put_questionnaire(questionnaire_key):
     input_data = json.load(sys.stdin)
 
     authorized_roles = get_authorized_roles()
@@ -83,41 +83,41 @@ def put_questionnaire(questionnaire_name):
         end_with_status(403)
 
 
-    if "all" in authorized_roles or questionnaire_name in authorized_roles:
-        resource_database.write_questionnaire(questionnaire_name, input_data)
+    if "all" in authorized_roles or questionnaire_key in authorized_roles:
+        resource_database.write_questionnaire(questionnaire_key, input_data)
         end_with_status(200)
     else:
         end_with_status(403)
 
-def get_questionnaire (questionnaire_name):
+def get_questionnaire (questionnaire_key):
     authorized_roles = get_authorized_roles(False)
 
-    if "all" in authorized_roles or questionnaire_name in authorized_roles or True: # TODO instead of True, check if questionnaire is public
-        questionnaire = resource_database.read_questionnaire(questionnaire_name)
+    if "all" in authorized_roles or questionnaire_key in authorized_roles or True: # TODO instead of True, check if questionnaire is public
+        questionnaire = resource_database.read_questionnaire(questionnaire_key)
         end_with_success(questionnaire)
     else:
         end_with_status(403)
 
-def get_questionnaire_labels (questionnaire_name):
+def get_questionnaire_labels (questionnaire_key):
     authorized_roles = get_authorized_roles()
     if len(authorized_roles) == 0:
         end_with_status(403)
 
-    if "all" in authorized_roles or questionnaire_name in authorized_roles:
-        questionnaire = resource_database.read_questionnaire(questionnaire_name)
+    if "all" in authorized_roles or questionnaire_key in authorized_roles:
+        questionnaire = resource_database.read_questionnaire(questionnaire_key)
         labels = questionnaire["labels"]
         end_with_success(labels)
     else:
         end_with_status(403)
 
 
-def patch_questionnaire_labels (questionnaire_name):
+def patch_questionnaire_labels (questionnaire_key):
     authorized_roles = get_authorized_roles()
     if len(authorized_roles) == 0:
         end_with_status(403)
 
-    if "all" in authorized_roles or questionnaire_name in authorized_roles:
-        questionnaire = resource_database.read_questionnaire(questionnaire_name)
+    if "all" in authorized_roles or questionnaire_key in authorized_roles:
+        questionnaire = resource_database.read_questionnaire(questionnaire_key)
 
         form = cgi.FieldStorage()
 
@@ -136,30 +136,30 @@ def patch_questionnaire_labels (questionnaire_name):
             if form.getfirst(label):
                 questionnaire["labels"][label] = form.getfirst(label)
         
-        resource_database.write_questionnaire(questionnaire_name, questionnaire)
+        resource_database.write_questionnaire(questionnaire_key, questionnaire)
         end_with_success(None)
     else:
         end_with_status(403)
 
 
-def get_questionnaire_emails (questionnaire_name):
+def get_questionnaire_emails (questionnaire_key):
     authorized_roles = get_authorized_roles()
     if len(authorized_roles) == 0:
         end_with_status(403)
 
-    if "all" in authorized_roles or questionnaire_name in authorized_roles:
-        emails = resource_database.read_questionnaire_emails(questionnaire_name)
+    if "all" in authorized_roles or questionnaire_key in authorized_roles:
+        emails = resource_database.read_questionnaire_emails(questionnaire_key)
         end_with_success(emails)
     else:
         end_with_status(403)
 
 
-def patch_questionnaire_email (questionnaire_name, language):
+def patch_questionnaire_email (questionnaire_key, language):
     authorized_roles = get_authorized_roles()
     if len(authorized_roles) == 0:
         end_with_status(403)
 
-    if "all" in authorized_roles or questionnaire_name in authorized_roles:
+    if "all" in authorized_roles or questionnaire_key in authorized_roles:
         form = cgi.FieldStorage()
 
         newLanguage = form.getfirst("language", language)
@@ -168,7 +168,7 @@ def patch_questionnaire_email (questionnaire_name, language):
         ccRecipient = form.getfirst("ccRecipient", "")
         text = form.getfirst("text", "")
 
-        resource_database.write_questionnaire_email(questionnaire_name, newLanguage, {
+        resource_database.write_questionnaire_email(questionnaire_key, newLanguage, {
             "subject": subject,
             "senderAddress": senderAddress,
             "ccRecipient": ccRecipient,
@@ -176,20 +176,20 @@ def patch_questionnaire_email (questionnaire_name, language):
         })
 
         if language != newLanguage:
-            resource_database.delete_questionnaire_email(questionnaire_name, language)
+            resource_database.delete_questionnaire_email(questionnaire_key, language)
 
         end_with_success(None)
     else:
         end_with_status(403)
 
 
-def delete_questionnaire_email (questionnaire_name, language):
+def delete_questionnaire_email (questionnaire_key, language):
     authorized_roles = get_authorized_roles()
     if len(authorized_roles) == 0:
         end_with_status(403)
 
-    if "all" in authorized_roles or questionnaire_name in authorized_roles:
-        resource_database.delete_questionnaire_email(questionnaire_name, language)
+    if "all" in authorized_roles or questionnaire_key in authorized_roles:
+        resource_database.delete_questionnaire_email(questionnaire_key, language)
         end_with_success(None)
     else:
         end_with_status(403)
@@ -203,5 +203,5 @@ def get_password ():
         end_with_success(config.password)
 
 
-def post_questionnaire_response (questionnaire_name):
+def post_questionnaire_response (questionnaire_key):
     pass

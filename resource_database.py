@@ -80,23 +80,23 @@ def list_questionnaires():
 
     return questionnaires
 
-def read_questionnaire(questionnaire_name):
-    return read_record([], questionnaire_name)
+def read_questionnaire(questionnaire_key):
+    return read_record([], questionnaire_key)
 
-def write_questionnaire(questionnaire_name, questionnaire):
-    write_record([], questionnaire_name, questionnaire)
+def write_questionnaire(questionnaire_key, questionnaire):
+    write_record([], questionnaire_key, questionnaire)
 
-def read_questionnaire_emails(questionnaire_name):
-    return read_collection([questionnaire_name], "emails", named = True)
+def read_questionnaire_emails(questionnaire_key):
+    return read_collection([questionnaire_key], "emails", named = True)
 
-def read_questionnaire_email(questionnaire_name, language):
-    return read_record([questionnaire_name, "emails"], language)
+def read_questionnaire_email(questionnaire_key, language):
+    return read_record([questionnaire_key, "emails"], language)
 
-def write_questionnaire_email(questionnaire_name, language, email):
-    return write_record([questionnaire_name, "emails"], language, email)
+def write_questionnaire_email(questionnaire_key, language, email):
+    return write_record([questionnaire_key, "emails"], language, email)
     
-def delete_questionnaire_email(questionnaire_name, language):
-    return delete_record([questionnaire_name, "emails"], language)
+def delete_questionnaire_email(questionnaire_key, language):
+    return delete_record([questionnaire_key, "emails"], language)
     
-def read_questionnaire_responses(questionnaire_name):
-    return read_collection([questionnaire_name], "responses")
+def read_questionnaire_responses(questionnaire_key):
+    return read_collection([questionnaire_key], "responses")
