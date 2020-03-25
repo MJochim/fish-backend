@@ -33,9 +33,12 @@ def print_headers(headers):
         print(header + ": " + headers[header])
 
 
-def get_authentication_token():
+def get_authentication_token(send_401_if_absent):
     if "HTTP_AUTHORIZATION" not in os.environ:
-        end_with_status(401)
+        if send_401_if_absent:
+            end_with_status(401)
+        else:
+            return None
 
     expected_prefix = "Bearer "
     authorization_header = os.environ["HTTP_AUTHORIZATION"]
@@ -43,7 +46,10 @@ def get_authentication_token():
     if authorization_header[0:len(expected_prefix)] == expected_prefix:
         return(authorization_header[len(expected_prefix):])
     else:
-        end_with_status(401)
+        if send_401_if_absent:
+            end_with_status(401)
+        else:
+            return None
 
 
 def get_request_path_components():

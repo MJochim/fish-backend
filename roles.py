@@ -4,11 +4,11 @@ import config
 from cgi_utilities import get_authentication_token
 from openid_connect_utilities import get_service_access_token
 
-def get_authorized_roles():
+def get_authorized_roles(send_401_if_unauthenticated = True):
     response = requests.post(
-        config.introspection_url, 
+        config.introspection_url,
         data = {
-            "token": get_authentication_token(), 
+            "token": get_authentication_token(send_401_if_unauthenticated),
             "client_id": config.client_id,
             "client_secret": config.client_secret
         },

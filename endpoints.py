@@ -10,20 +10,20 @@ from roles import get_authorized_roles, get_all_roles, create_role
 
 
 def get_all_questionnaires():
-    authorized_roles = get_authorized_roles()
-    if len(authorized_roles) == 0:
-        end_with_status(403)
+    authorized_roles = get_authorized_roles(False)
 
     all_questionnaires = resource_database.list_questionnaires()
 
-    if "all" in authorized_roles:
-        end_with_success(all_questionnaires)
-    else:
-        authorized_questionnaires = list(set.intersection(
-            set(all_questionnaires),
-            set(authorized_roles)
-        ))
-        end_with_success(authorized_questionnaires)
+    response = []
+
+    for current_questionnaire in all_questionnaires:
+        response.append({
+            "name": current_questionnaire,
+            "public": True,
+            "admin": (current_questionnaire in authorized_roles) or ("all" in authorized_roles)
+        })
+
+    end_with_success(response)
 
 
 def get_questionnaire_responses(questionnaire_name):
