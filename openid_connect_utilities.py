@@ -11,6 +11,7 @@ def get_service_access_token():
             "client_id": config.client_id,
             "client_secret": config.client_secret
         },
+        verify = config.tls_verify_server_certificates,
     )
 
     if response.status_code == 200:

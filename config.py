@@ -15,6 +15,8 @@ client_secret = ""
 frontend_client_uuid = ""
 frontend_client_id = "fish-frontend"
 
+tls_verify_server_certificates = True
+
 headers = {
 	"Access-Control-Allow-Origin": "*",
 	"Access-Control-Allow-Headers": "authorization,content-type",

@@ -12,6 +12,7 @@ def get_authorized_roles(send_401_if_unauthenticated = True):
             "client_id": config.client_id,
             "client_secret": config.client_secret
         },
+        verify = config.tls_verify_server_certificates,
     )
 
     if response.status_code == 200:
@@ -38,6 +39,7 @@ def get_all_roles():
         headers = {
             "Authorization": "Bearer " + service_access_token
         },
+        verify = config.tls_verify_server_certificates,
     )
 
     if response.status_code == 200:
@@ -55,6 +57,7 @@ def create_role(role_name):
         headers = {
             "Authorization": "Bearer " + service_access_token
         },
+        verify = config.tls_verify_server_certificates,
         json = {
             "name": role_name
         }
