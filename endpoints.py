@@ -197,14 +197,6 @@ def delete_questionnaire_email (questionnaire_key, language):
         end_with_status(403)
         
 
-def get_password ():
-    authorized_roles = get_authorized_roles()
-    if len(authorized_roles) == 0:
-        end_with_status(403)
-    else:
-        end_with_success(config.password)
-
-
 def post_questionnaire_response (questionnaire_key):
     input_data = json.load(sys.stdin)
 

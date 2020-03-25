@@ -3,8 +3,6 @@ cgi_trace_logdir = "/var/log/fish/cgilogs"
 
 data_directory = "/var/lib/fish/questionnaires_collection"
 
-password = ""
-
 base_url = "/fish"
 
 token_url = "https://keycloak.example.com/auth/realms/master/protocol/openid-connect/token"

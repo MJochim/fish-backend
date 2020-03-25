@@ -22,12 +22,6 @@ path_components = get_request_path_components()
 if len(path_components) < 1:
     end_with_status(404)
 
-elif len(path_components) == 1 and path_components[0] == "password":
-    if request_method == "GET":
-        endpoints.get_password()
-    else:
-        end_with_status(405)
-
 elif path_components[0] != "questionnaires":
     end_with_status(404)
 

@@ -12,10 +12,6 @@ Require all denied
 	Require all granted
 </Files>
 
-<Files "password">
-	Require all granted
-</Files>
-
 
 Options +SymLinksIfOwnerMatch
 RewriteEngine on
