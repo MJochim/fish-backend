@@ -13,8 +13,8 @@ def send_email(sender, to, cc, subject, text):
     message['To'] = to
     message['Cc'] = cc
 
-    smtp_connection = smtplib.SMTP(host = config.smtp_host, local_hostname = smtp_local_hostname)
+    smtp_connection = smtplib.SMTP(host = config.smtp_host, local_hostname = config.smtp_local_hostname)
     smtp_connection.starttls()
-    smtp_connection.login(smtp_username, smtp_password)
+    smtp_connection.login(config.smtp_username, config.smtp_password)
     smtp_connection.send_message(message)
     smtp_connection.quit()

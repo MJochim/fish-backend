@@ -221,7 +221,7 @@ def post_questionnaire_response (questionnaire_key):
         send_email(
             email_info["senderAddress"],
             recipient_address,
-            email_info["ccAddress"],
+            email_info["ccRecipient"],
             email_info["subject"],
             email_info["text"]
         )
