@@ -63,6 +63,16 @@ elif len(path_components) == 3 and path_components[2] == "labels":
     else:
         end_with_status(405)
 
+elif len(path_components) == 3 and path_components[2] == "properties":
+    questionnaire_key = path_components[1]
+
+    if request_method == "GET":
+        endpoints.get_questionnaire_properties(questionnaire_key)
+    elif request_method == "PATCH":
+        endpoints.patch_questionnaire_properties(questionnaire_key)
+    else:
+        end_with_status(405)
+
 elif len(path_components) == 3 and path_components[2] == "emails":
     questionnaire_key = path_components[1]
 

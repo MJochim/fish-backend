@@ -60,7 +60,7 @@ def create_questionnaire():
     new_questionnaire = {
         "key": questionnaire_key,
         "place": "",
-        "avatar": "",
+        "pictureUrl": "",
         "date": "",
         "labels": {},
         "showBackButton": True,
@@ -137,6 +137,47 @@ def patch_questionnaire_labels (questionnaire_key):
         for label in possibleLabels:
             if form.getfirst(label):
                 questionnaire["labels"][label] = form.getfirst(label)
+        
+        resource_database.write_questionnaire(questionnaire_key, questionnaire)
+        end_with_success(None)
+    else:
+        end_with_status(403)
+
+
+def get_questionnaire_properties (questionnaire_key):
+    authorized_roles = get_authorized_roles()
+    if len(authorized_roles) == 0:
+        end_with_status(403)
+
+    if "all" in authorized_roles or questionnaire_key in authorized_roles:
+        questionnaire = resource_database.read_questionnaire(questionnaire_key)
+        properties = {
+            "name": questionnaire["name"],
+            "pictureUrl": questionnaire["pictureUrl"]
+        }
+        end_with_success(properties)
+    else:
+        end_with_status(403)
+
+
+def patch_questionnaire_properties (questionnaire_key):
+    authorized_roles = get_authorized_roles()
+    if len(authorized_roles) == 0:
+        end_with_status(403)
+
+    if "all" in authorized_roles or questionnaire_key in authorized_roles:
+        questionnaire = resource_database.read_questionnaire(questionnaire_key)
+
+        form = cgi.FieldStorage()
+
+        possibleProperties = [
+            "name",
+            "pictureUrl"
+        ]
+
+        for property in possibleProperties:
+            if form.getfirst(property):
+                questionnaire[property] = form.getfirst(property)
         
         resource_database.write_questionnaire(questionnaire_key, questionnaire)
         end_with_success(None)
