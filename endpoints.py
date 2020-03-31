@@ -132,7 +132,7 @@ def patch_questionnaire_labels (questionnaire_key):
         ]
 
         for label in possibleLabels:
-            if form.getfirst(label):
+            if label in form:
                 questionnaire["labels"][label] = form.getfirst(label)
         
         resource_database.write_questionnaire(questionnaire_key, questionnaire)
@@ -173,7 +173,7 @@ def patch_questionnaire_properties (questionnaire_key):
         ]
 
         for property in possibleProperties:
-            if form.getfirst(property):
+            if property in form:
                 questionnaire[property] = form.getfirst(property)
         
         resource_database.write_questionnaire(questionnaire_key, questionnaire)
