@@ -1,6 +1,7 @@
 import hashlib
 import json
 import os
+import re
 
 import config
 
@@ -66,6 +67,12 @@ def read_collection(parent_collections, collection_name, named = False):
                 records.append(record)
 
     return records
+
+def is_valid_resource_name (name):
+    if re.match("^[a-zA-Z0-9_-]*$", name) is None:
+        return False
+    else:
+        return True
 
 
 #############################################

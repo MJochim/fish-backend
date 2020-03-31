@@ -35,6 +35,9 @@ def get_all_questionnaires():
 
 
 def get_questionnaire_responses(questionnaire_key):
+    if not resource_database.is_valid_resource_name(questionnaire_key):
+        end_with_status(400)
+
     authorized_roles = get_authorized_roles()
     if len(authorized_roles) == 0:
         end_with_status(403)
@@ -54,9 +57,10 @@ def create_questionnaire():
     form = cgi.FieldStorage()
     questionnaire_key = form.getfirst("questionnaireKey")
 
-    # TODO sanitize key
-
     if not questionnaire_key:
+        end_with_status(400)
+
+    if not resource_database.is_valid_resource_name(questionnaire_key):
         end_with_status(400)
 
     all_questionnaires = resource_database.list_questionnaires()
@@ -81,6 +85,9 @@ def create_questionnaire():
     end_with_success(None)
 
 def put_questionnaire(questionnaire_key):
+    if not resource_database.is_valid_resource_name(questionnaire_key):
+        end_with_status(400)
+
     input_data = json.load(sys.stdin)
 
     authorized_roles = get_authorized_roles()
@@ -95,6 +102,9 @@ def put_questionnaire(questionnaire_key):
         end_with_status(403)
 
 def get_questionnaire (questionnaire_key):
+    if not resource_database.is_valid_resource_name(questionnaire_key):
+        end_with_status(400)
+
     authorized_roles = get_authorized_roles(False)
 
     questionnaire = resource_database.read_questionnaire(questionnaire_key)
@@ -105,6 +115,9 @@ def get_questionnaire (questionnaire_key):
         end_with_status(403)
 
 def delete_questionnaire (questionnaire_key):
+    if not resource_database.is_valid_resource_name(questionnaire_key):
+        end_with_status(400)
+
     authorized_roles = get_authorized_roles()
     if len(authorized_roles) == 0:
         end_with_status(403)
@@ -117,6 +130,9 @@ def delete_questionnaire (questionnaire_key):
 
 
 def get_questionnaire_labels (questionnaire_key):
+    if not resource_database.is_valid_resource_name(questionnaire_key):
+        end_with_status(400)
+
     authorized_roles = get_authorized_roles()
     if len(authorized_roles) == 0:
         end_with_status(403)
@@ -130,6 +146,9 @@ def get_questionnaire_labels (questionnaire_key):
 
 
 def patch_questionnaire_labels (questionnaire_key):
+    if not resource_database.is_valid_resource_name(questionnaire_key):
+        end_with_status(400)
+
     authorized_roles = get_authorized_roles()
     if len(authorized_roles) == 0:
         end_with_status(403)
@@ -161,6 +180,9 @@ def patch_questionnaire_labels (questionnaire_key):
 
 
 def get_questionnaire_properties (questionnaire_key):
+    if not resource_database.is_valid_resource_name(questionnaire_key):
+        end_with_status(400)
+
     authorized_roles = get_authorized_roles()
     if len(authorized_roles) == 0:
         end_with_status(403)
@@ -178,6 +200,9 @@ def get_questionnaire_properties (questionnaire_key):
 
 
 def patch_questionnaire_properties (questionnaire_key):
+    if not resource_database.is_valid_resource_name(questionnaire_key):
+        end_with_status(400)
+
     authorized_roles = get_authorized_roles()
     if len(authorized_roles) == 0:
         end_with_status(403)
@@ -215,6 +240,9 @@ def patch_questionnaire_properties (questionnaire_key):
 
 
 def get_questionnaire_emails (questionnaire_key):
+    if not resource_database.is_valid_resource_name(questionnaire_key):
+        end_with_status(400)
+
     authorized_roles = get_authorized_roles()
     if len(authorized_roles) == 0:
         end_with_status(403)
@@ -227,6 +255,12 @@ def get_questionnaire_emails (questionnaire_key):
 
 
 def patch_questionnaire_email (questionnaire_key, language):
+    if not resource_database.is_valid_resource_name(questionnaire_key):
+        end_with_status(400)
+
+    if not resource_database.is_valid_resource_name(language):
+        end_with_status(400)
+
     authorized_roles = get_authorized_roles()
     if len(authorized_roles) == 0:
         end_with_status(403)
@@ -239,6 +273,9 @@ def patch_questionnaire_email (questionnaire_key, language):
         senderAddress = form.getfirst("senderAddress", "")
         ccRecipient = form.getfirst("ccRecipient", "")
         text = form.getfirst("text", "")
+
+        if not resource_database.is_valid_resource_name(newLanguage):
+            end_with_status(400)
 
         resource_database.write_questionnaire_email(questionnaire_key, newLanguage, {
             "subject": subject,
@@ -256,6 +293,12 @@ def patch_questionnaire_email (questionnaire_key, language):
 
 
 def delete_questionnaire_email (questionnaire_key, language):
+    if not resource_database.is_valid_resource_name(questionnaire_key):
+        end_with_status(400)
+
+    if not resource_database.is_valid_resource_name(language):
+        end_with_status(400)
+
     authorized_roles = get_authorized_roles()
     if len(authorized_roles) == 0:
         end_with_status(403)
@@ -268,7 +311,18 @@ def delete_questionnaire_email (questionnaire_key, language):
         
 
 def post_questionnaire_response (questionnaire_key):
+    if not resource_database.is_valid_resource_name(questionnaire_key):
+        end_with_status(400)
+
     input_data = json.load(sys.stdin)
+
+    if "ContactLanguage" in input_data:
+        if not resource_database.is_valid_resource_name(input_data["ContactLanguage"]):
+            end_with_status(400)
+
+    if "conferenceKey" in input_data:
+        if not resource_database.is_valid_resource_name(input_data["conferenceKey"]):
+            end_with_status(400)
 
     input_data["time"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     # TODO Add IP and browser? Only possible if we notify the users
