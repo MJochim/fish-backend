@@ -104,6 +104,18 @@ def get_questionnaire (questionnaire_key):
     else:
         end_with_status(403)
 
+def delete_questionnaire (questionnaire_key):
+    authorized_roles = get_authorized_roles()
+    if len(authorized_roles) == 0:
+        end_with_status(403)
+
+    if "all" in authorized_roles or questionnaire_key in authorized_roles:
+        resource_database.delete_questionnaire(questionnaire_key)
+        end_with_success(None)
+    else:
+        end_with_status(403)
+
+
 def get_questionnaire_labels (questionnaire_key):
     authorized_roles = get_authorized_roles()
     if len(authorized_roles) == 0:

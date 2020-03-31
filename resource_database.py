@@ -87,6 +87,9 @@ def read_questionnaire(questionnaire_key):
 def write_questionnaire(questionnaire_key, questionnaire):
     write_record([], questionnaire_key, questionnaire)
 
+def delete_questionnaire(questionnaire_key):
+    pass
+
 def read_questionnaire_emails(questionnaire_key):
     return read_collection([questionnaire_key], "emails", named = True)
 

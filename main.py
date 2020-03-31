@@ -40,6 +40,8 @@ elif len(path_components) == 2:
         endpoints.get_questionnaire(questionnaire_key)
     elif request_method == "PUT":
         endpoints.put_questionnaire(questionnaire_key)
+    elif request_method == "DELETE":
+        endpoints.delete_questionnaire(questionnaire_key)
     else:
         end_with_status(405)
 
