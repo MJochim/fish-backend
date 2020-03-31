@@ -59,12 +59,9 @@ def create_questionnaire():
 
     new_questionnaire = {
         "key": questionnaire_key,
-        "place": "",
-        "pictureUrl": "",
-        "date": "",
-        "labels": {},
-        "showBackButton": True,
         "name": "",
+        "pictureUrl": "",
+        "labels": {},
         "registration": []
     }
 
