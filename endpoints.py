@@ -18,12 +18,18 @@ def get_all_questionnaires():
 
     response = []
 
-    for current_questionnaire in all_questionnaires:
-        response.append({
-            "key": current_questionnaire,
-            "public": True,
-            "admin": (current_questionnaire in authorized_roles) or ("all" in authorized_roles)
-        })
+    for current_questionnaire_key in all_questionnaires:
+        current_questionnaire_data = resource_database.read_questionnaire(current_questionnaire_key)
+
+        public = current_questionnaire_data["public"]
+        admin = (current_questionnaire_key in authorized_roles) or ("all" in authorized_roles)
+
+        if public or admin:
+            response.append({
+                "key": current_questionnaire_key,
+                "public": public,
+                "admin": admin
+            })
 
     end_with_success(response)
 
@@ -91,8 +97,9 @@ def put_questionnaire(questionnaire_key):
 def get_questionnaire (questionnaire_key):
     authorized_roles = get_authorized_roles(False)
 
-    if "all" in authorized_roles or questionnaire_key in authorized_roles or True: # TODO instead of True, check if questionnaire is public
-        questionnaire = resource_database.read_questionnaire(questionnaire_key)
+    questionnaire = resource_database.read_questionnaire(questionnaire_key)
+
+    if "all" in authorized_roles or questionnaire_key in authorized_roles or questionnaire["public"]: 
         end_with_success(questionnaire)
     else:
         end_with_status(403)
@@ -150,7 +157,8 @@ def get_questionnaire_properties (questionnaire_key):
         questionnaire = resource_database.read_questionnaire(questionnaire_key)
         properties = {
             "name": questionnaire["name"],
-            "pictureUrl": questionnaire["pictureUrl"]
+            "pictureUrl": questionnaire["pictureUrl"],
+            "public": questionnaire["public"]
         }
         end_with_success(properties)
     else:
@@ -169,12 +177,24 @@ def patch_questionnaire_properties (questionnaire_key):
 
         possibleProperties = [
             "name",
-            "pictureUrl"
+            "pictureUrl",
+            "public"
+        ]
+
+        booleanProperties = [
+            "public"
         ]
 
         for property in possibleProperties:
             if property in form:
-                questionnaire[property] = form.getfirst(property)
+                if property in booleanProperties:
+                    string_value = form.getfirst(property)
+                    if string_value == "true":
+                        questionnaire[property] = True
+                    else:
+                        questionnaire[property] = False
+                else:
+                    questionnaire[property] = form.getfirst(property)
         
         resource_database.write_questionnaire(questionnaire_key, questionnaire)
         end_with_success(None)
