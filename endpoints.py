@@ -8,7 +8,7 @@ import config
 import resource_database
 from cgi_utilities import end_with_success, end_with_status
 from email_utilities import send_email
-from roles import get_authorized_roles, get_all_roles, create_role
+from roles import get_authorized_roles, get_all_roles, create_role, delete_role
 
 
 def get_all_questionnaires():
@@ -115,7 +115,7 @@ def get_questionnaire (questionnaire_key):
         end_with_status(403)
 
 def delete_questionnaire (questionnaire_key):
-    if not resource_database.is_valid_resource_name(questionnaire_key):
+    if questionnaire_key == "all" or not resource_database.is_valid_resource_name(questionnaire_key):
         end_with_status(400)
 
     authorized_roles = get_authorized_roles()
@@ -124,6 +124,8 @@ def delete_questionnaire (questionnaire_key):
 
     if "all" in authorized_roles or questionnaire_key in authorized_roles:
         resource_database.delete_questionnaire(questionnaire_key)
+        delete_role(questionnaire_key)
+
         end_with_success(None)
     else:
         end_with_status(403)

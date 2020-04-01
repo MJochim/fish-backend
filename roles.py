@@ -64,3 +64,17 @@ def create_role(role_name):
     )
 
     return response.status_code
+        
+
+def delete_role(role_name):
+    service_access_token = get_service_access_token()
+
+    response = requests.delete(
+        config.keycloak_realm_api_url + "/clients/" + config.frontend_client_uuid + "/roles/" + role_name,
+        headers = {
+            "Authorization": "Bearer " + service_access_token
+        },
+        verify = config.tls_verify_server_certificates,
+    )
+
+    return response.status_code

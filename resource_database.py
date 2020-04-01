@@ -2,6 +2,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 
 import config
 
@@ -68,6 +69,14 @@ def read_collection(parent_collections, collection_name, named = False):
 
     return records
 
+def delete_collection(parent_collections, collection_name):
+    parent_collections = [x + "_collection/" for x in parent_collections]
+    collection_path = ''.join(parent_collections)
+
+    path = config.data_directory + "/" + collection_path + collection_name + "_collection"
+    shutil.rmtree(path)
+
+
 def is_valid_resource_name (name):
     if re.match("^[a-zA-Z0-9_-]*$", name) is None:
         return False
@@ -95,7 +104,8 @@ def write_questionnaire(questionnaire_key, questionnaire):
     write_record([], questionnaire_key, questionnaire)
 
 def delete_questionnaire(questionnaire_key):
-    pass
+    delete_record([], questionnaire_key)
+    delete_collection([], questionnaire_key)
 
 def read_questionnaire_emails(questionnaire_key):
     return read_collection([questionnaire_key], "emails", named = True)
