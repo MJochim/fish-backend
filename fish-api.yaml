@@ -1,0 +1,372 @@
+openapi: 3.0.0
+
+
+info:
+  version: 0.9.0
+  title: FISH Questionnaire Management Suite
+  description: "The restful API used in the Fish suite for online questionnaires."
+  license:
+    name: "AGPLv3"
+
+
+servers:
+  - url: 'https://api.example.com/fish'
+
+
+tags:
+  - name: Questionnaires
+    description: "Manage questionnaires"
+  - name: Responses
+    description: "Manage the responses that were made to a given questionnaire"
+  - name: Emails
+    description: "Manage confirmation emails"
+
+
+paths:
+  /questionnaires:
+    get:
+      summary: List keys and properties of all questionnaires – Semi-public endpoint
+      description: For unauthenticated users, the result contains all public questionnaires. For authenticated users, the result additionally contains all non-public questionnaires accessible to the user.
+      tags:
+        - Questionnaires
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    key:
+                      type: string
+                    public:
+                      type: boolean
+                    admin:
+                      type: boolean
+              example:
+              - key: "myconf12_de"
+                admin: true
+                public: true
+              - key: "myconf12_en"
+                admin: true
+                public: false
+              - key: "scholarship_myconf12"
+                admin: false
+                public: true
+    post:
+      summary: Create a new questionnaire
+      tags:
+        - Questionnaires
+      requestBody:
+        content:
+          multipart/formdata:
+            schema:
+              type: object
+              required:
+                - questionnaireKey
+              properties:
+                questionnaireKey:
+                  type: string
+      responses:
+        200:
+          description: OK
+        409:
+          description: "Conflict (questionnaire exists already or tried to create 'all'"
+          
+  /questionnaires/{questionnaireKey}:
+    parameters:
+      - name: questionnaireKey
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Retrieve an individual questionnaire – Semi-public endpoint
+      tags:
+        - Questionnaires
+      responses:
+        403:
+          $ref: '#/components/responses/Forbidden'
+        200:
+          description: A questionnaire object (the schema of which is not yet part of this OpenAPI description)
+    put:
+      summary: Edit a questionnaire (by uploading a new JSON)
+      tags:
+        - Questionnaires
+      responses:
+        403:
+          $ref: '#/components/responses/Forbidden'
+        200:
+          description: OK
+    delete:
+      summary: Delete a questionnaire and all user data associated with it
+      tags:
+        - Questionnaires
+      responses:
+        403:
+          $ref: '#/components/responses/Forbidden'
+        200:
+          description: OK
+  
+  /questionnaires/{questionnaireKey}/properties:
+    parameters:
+      - name: questionnaireKey
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Retrieve the name and picture URL of a given questionnaire
+      tags:
+        - Questionnaires
+      responses:
+        403:
+            $ref: '#/components/responses/Forbidden'
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyObject'
+    patch:
+      summary: Update the name and picture URL of a given questionnaire
+      tags:
+        - Questionnaires
+      requestBody:
+        content:
+          multipart/formdata:
+            schema:
+              $ref: '#/components/schemas/PropertyObject'
+              
+      responses:
+        403:
+          $ref: '#/components/responses/Forbidden'
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyObject'
+        
+  /questionnaires/{questionnaireKey}/labels:
+    parameters:
+      - name: questionnaireKey
+        in: path
+        required: true
+        schema:
+          type: string
+
+    get:
+      summary: Retrieve the labels (button labels, dialog question, messages) of a given questionnaire
+      tags:
+        - Questionnaires
+      responses:
+        403:
+          $ref: '#/components/responses/Forbidden'
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabelList'
+    patch:
+      summary: Update the labels (button labels, dialog question, messages) of a given questionnaire
+      tags:
+        - Questionnaires
+      requestBody:
+        content:
+          multipart/formdata:
+            schema:
+              $ref: '#/components/schemas/LabelList'
+      responses:
+        403:
+          $ref: '#/components/responses/Forbidden'
+        200:
+          description: OK
+
+  /questionnaires/{questionnaireKey}/responses:
+    get:
+      summary: Retrieve all responses made to a given questionnaire
+      tags:
+        - Responses
+      parameters:
+        - name: questionnaireKey
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Post a new response to a given questionnaire – public endpoint
+      tags:
+        - Responses
+      parameters:
+        - name: questionnaireKey
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: registration
+          in: query
+          required: true
+          schema:
+            type: object
+      responses:
+        200:
+          description: OK
+      
+  /questionnaires/{questionnaireKey}/emails:
+    get:
+      summary: Retrieve all confirmation emails associated with a given questionnaire
+      tags:
+        - Emails
+      parameters:
+        - name: questionnaireKey
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: "#/components/schemas/Email"
+              example:
+                de:
+                  subject: "Anmeldebestätigung"
+                  senderAddress: "noreply@example.com"
+                  ccRecipient: "organisation@example.com"
+                  text: "Liebe*r Teilnehmer*in, ..."
+                en:
+                  subject: "Confirmation of registration"
+                  senderAddress: "noreply@example.com"
+                  ccRecipient: "organisation@example.com"
+                  text: "Dear participant, ..."
+        
+  /questionnaires/{questionnaireKey}/emails/{language}:
+    parameters: 
+      - name: questionnaireKey
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: language
+        in: path
+        required: true
+        schema:
+          type: string
+
+    patch:
+      summary: "Create or update a confirmation email"
+      tags:
+        - Emails
+      requestBody:
+        content:
+          multipart/formdata:
+            schema:
+              type: object
+              required:
+                - language
+                - subject
+                - senderAddress
+                - ccRecipient
+                - text
+              properties:
+                language:
+                  type: string
+                subject:
+                  type: string
+                senderAddress:
+                  type: string
+                ccRecipient:
+                  type: string
+                text:
+                  type: string
+      responses:
+        403:
+          $ref: '#/components/responses/Forbidden'
+        200:
+          description: OK
+          
+    delete:
+      summary: Delete a confirmation email
+      tags:
+        - Emails
+      responses:
+        403:
+          $ref: '#/components/responses/Forbidden'
+        200:
+          description: "OK"
+          
+
+security:
+  - openIdConnect: []
+  - bearer: []
+
+
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: "JWT"
+    openIdConnect:
+      type: openIdConnect
+      openIdConnectUrl: "https://keycloak.example.com/auth/realms/test-realm/.well-known/openid-configuration"
+  responses:
+    Forbidden:
+      description: "Forbidden – Your account is not entitled to do this."
+  schemas:
+    Email:
+      type: object
+      required:
+        - subject
+        - senderAddress
+        - ccRecipient
+        - text
+      properties:
+        subject:
+          type: string
+        senderAddress:
+          type: string
+        ccRecipient:
+          type: string
+        text:
+          type: string
+    LabelList:
+      type: object
+      properties:
+        headline:
+          type: string
+        submit:
+          type: string
+        abort:
+          type: string
+        back:
+          type: string
+        submitQuestion:
+          type: string
+        errorInvalidForm:
+          type: string
+        errorDuringSubmission:
+          type: string
+        registrationSuccessful:
+          type: string
+    PropertyObject:
+      type: object
+      required:
+        - name
+        - pictureUrl
+      properties:
+        name:
+          type: string
+        pictureUrl:
+          type: string
