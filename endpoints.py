@@ -72,6 +72,7 @@ def create_questionnaire():
         "name": "",
         "pictureUrl": "",
         "labels": {},
+        "public": False,
         "registration": []
     }
 
