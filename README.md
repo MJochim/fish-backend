@@ -28,7 +28,7 @@ managing some other details.
 The [fɪʃ] suite allows text input fields, single choice and multiple choice
 questions. Text input fields can be marked optional.
 
-![Visualization of item types](docs/item-types.png)
+![Visualization of item types](https://github.com/MJochim/fish-public-frontend/blob/master/docs/item-types.png)
 
 ## The editor
 
@@ -37,7 +37,7 @@ change and re-arrange items. Each item is given a key that determines the column
 heading under which the response will later be found in the table (or CSV file)
 of results.
 
-![A glance at the questionnaire editor](docs/editor.png)
+![A glance at the questionnaire editor](https://github.com/MJochim/fish-public-frontend/blob/master/docs/editor.png)
 
 ## The Fish API
 
